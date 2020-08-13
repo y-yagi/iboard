@@ -1,58 +1,43 @@
-import Container from '../components/container'
-import MoreStories from '../components/more-stories'
-import HeroPost from '../components/hero-post'
-import Intro from '../components/intro'
-import Layout from '../components/layout'
-import { getAllPosts } from '../lib/api'
-import Head from 'next/head'
-import { CMS_NAME } from '../lib/constants'
-import Post from '../types/post'
+import { useUser } from "../lib/useUser";
+import Container from "../components/container";
+import Intro from "../components/intro";
+import Layout from "../components/layout";
+import Bookmarks from "../components/bookmarks";
+import SectionSeparotr from "../components/section-separator";
+import Head from "next/head";
+import Link from "next/link";
 
-type Props = {
-  allPosts: Post[]
-}
+const Index = () => {
+  const { user, logout } = useUser();
 
-const Index = ({ allPosts }: Props) => {
-  const heroPost = allPosts[0]
-  const morePosts = allPosts.slice(1)
+  if (!user) {
+    return (
+      <>
+        <p>Hi there!</p>
+        <p>
+          You are not signed in.{" "}
+          <Link href={"/auth"}>
+            <a>Sign in</a>
+          </Link>
+        </p>
+      </>
+    );
+  }
+
   return (
     <>
       <Layout>
         <Head>
-          <title>Next.js Blog Example with {CMS_NAME}</title>
+          <title>Information Board</title>
         </Head>
         <Container>
           <Intro />
-          {heroPost && (
-            <HeroPost
-              title={heroPost.title}
-              coverImage={heroPost.coverImage}
-              date={heroPost.date}
-              author={heroPost.author}
-              slug={heroPost.slug}
-              excerpt={heroPost.excerpt}
-            />
-          )}
-          {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+          <Bookmarks />
+          <SectionSeparotr />
         </Container>
       </Layout>
     </>
-  )
-}
+  );
+};
 
-export default Index
-
-export const getStaticProps = async () => {
-  const allPosts = getAllPosts([
-    'title',
-    'date',
-    'slug',
-    'author',
-    'coverImage',
-    'excerpt',
-  ])
-
-  return {
-    props: { allPosts },
-  }
-}
+export default Index;
